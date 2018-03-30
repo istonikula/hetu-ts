@@ -23,7 +23,7 @@
   "author": "Isto Nikula <isto.nikula@iki.fi>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/istonikula/issues"
+    "url": "https://github.com/istonikula/hetu-ts/issues"
   },
   "homepage": "https://github.com/istonikula/hetu-ts",
   "dependencies": {
