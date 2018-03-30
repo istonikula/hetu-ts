@@ -11,6 +11,12 @@ export default class Nnn {
   isTemporal() { return Nnn.isTemporal(this.value) }
   toString() { return ('00' + this.value).slice(-3) }
 
+  static parse(s: string) {
+    const i = parseInt(s, 10)
+    if (Nnn.isReal(i) || Nnn.isTemporal(i)) return new Nnn(i)
+    throw new Error(`Invalid nnn: ${s}`)
+  }
+
   static generate = Nnn.gen(2, 899)
   static generateTemporal = Nnn.gen(900, 999)
 
