@@ -49,8 +49,6 @@ export class Parser {
     const m = candidate.match(Parser.re)
     if (m == null) throw Error('Invalid ssn: pattern mismatch')
 
-    const a = Groups.bday.valueOf()
-
     const centuryId = century.parseId(m[Groups.century])
     const bday = Bday.parse(m[Groups.bday], centuryId)
     const nnn = Nnn.parse(m[Groups.nnn])

@@ -1,6 +1,6 @@
 import * as moment from 'moment'
 
-import * as ssn from './index'
+import * as ssn from '../src'
 
 describe('ssn', () => {
   const bday1900 = moment({ year: 1980, month: 2, day: 22 })
