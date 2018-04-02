@@ -10,7 +10,6 @@
   "scripts": {
     "lint": "tslint src/**/*.ts test/**/*.ts",
     "jest": "jest",
-    "prettier": "prettier --no-semi --single-quote --print-width 120 --parser typescript --list-different \"src/**/*.ts\"",
     "test": "yarn run lint && yarn run jest",
     "clean": "rm -rf lib/*",
     "build": "yarn run clean && tsc"
@@ -31,10 +30,9 @@
   "devDependencies": {
     "@types/jest": "^22.2.2",
     "jest": "^22.4.3",
-    "prettier": "^1.11.1",
     "ts-jest": "^22.4.2",
     "tslint": "^5.9.1",
-    "tslint-config-standard": "^7.0.0",
+    "tslint-config-prettier": "^1.10.0",
     "typescript": "^2.8.1"
   },
   "tags": [
