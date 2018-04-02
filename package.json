@@ -9,7 +9,6 @@
   "typings": "lib/index.d.ts",
   "scripts": {
     "lint": "tslint src/**/*.ts test/**/*.ts",
-    "typings-checker": "typings-checker --allow-expect-error --project typings-checker/tsconfig.json typings-checker/index.ts",
     "jest": "jest",
     "prettier": "prettier --no-semi --single-quote --print-width 120 --parser typescript --list-different \"src/**/*.ts\"",
     "test": "yarn run lint && yarn run jest",
@@ -36,8 +35,7 @@
     "ts-jest": "^22.4.2",
     "tslint": "^5.9.1",
     "tslint-config-standard": "^7.0.0",
-    "typescript": "^2.8.1",
-    "typings-checker": "^2.0.0"
+    "typescript": "^2.8.1"
   },
   "tags": [
     "typescript",
