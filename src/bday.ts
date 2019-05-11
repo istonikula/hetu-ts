@@ -1,39 +1,51 @@
-import * as moment from 'moment'
+import { DateTimeFormatter, Instant, LocalDate, ZoneId } from 'js-joda'
 
 import * as random from './random'
 import * as century from './century'
 
+const df = DateTimeFormatter.ofPattern('ddMMyy')
+
+enum Groups {
+  day = 1,
+  month = 2,
+  year = 3,
+}
+
 export default class Bday {
-  constructor(readonly value: moment.Moment) {}
+  constructor(readonly value: LocalDate) {}
 
-  toString() { return this.value.format(Bday.format) }
+  toString = () => this.value.format(df)
 
-  toCenturyId() {
-    return century.parse(Bday.toCentury(this.value))
+  toCenturyId = () => century.parse(Bday.toCentury(this.value))
+
+  static from = (date: LocalDate) => new Bday(date)
+
+  // NOTE: min and max are only approximations here as UTC is used
+  static random = (minAge: number = 16, maxAge: number = 117) => {
+    const start = LocalDate.now().minusYears(maxAge).atStartOfDay(ZoneId.UTC).toInstant().toEpochMilli()
+    const end = LocalDate.now().minusYears(minAge).atStartOfDay(ZoneId.UTC).toInstant().toEpochMilli()
+    return LocalDate.ofInstant(Instant.ofEpochMilli(random.fromRange(start, end)))
   }
 
-  static from(date: moment.Moment) {
-    return new Bday(date)
+  public static parse(s: string, centuryId: century.CenturyId) {
+    const m = s.match(Bday.re)
+    if (m == null) {
+      throw Error('Invalid bday: pattern mismatch')
+    }
+    const day = parseInt(m[Groups.day], 10)
+    const month = parseInt(m[Groups.month], 10)
+    const year = parseInt(m[Groups.year], 10) + centuryId.century()
+
+    return new Bday(LocalDate.of(year, month, day))
   }
 
-  static random(minAge: number = 16, maxAge: number = 117) {
-    const start = moment().subtract(maxAge, 'years').valueOf()
-    const end = moment().subtract(minAge, 'years').valueOf()
-    return moment(random.fromRange(start, end))
-  }
+  private static pattern =
+    '^' + // start
+    '(\\d{2})' + // dd
+    '(\\d{2})' + // MM
+    '(\\d{2})' + // yy
+    '$' // end
+  private static re = new RegExp(Bday.pattern)
 
-  static parse(s: string, centuryId: century.CenturyId) {
-    const parsed = moment(s, Bday.format)
-    return new Bday(parsed.year(Bday.yearOffset(parsed) + centuryId.century()))
-  }
-
-  private static format = 'DDMMYY'
-
-  private static toCentury(date: moment.Moment) {
-    return Math.floor((date.year() / 100)) * 100
-  }
-
-  private static yearOffset(date: moment.Moment) {
-    return date.year() % 100
-  }
+  private static toCentury = (date: LocalDate) => Math.floor((date.year() / 100)) * 100
 }

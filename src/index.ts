@@ -1,16 +1,16 @@
 
-import { Moment } from 'moment'
+import { LocalDate } from 'js-joda'
 
 import Bday from './bday'
 import Nnn, { Gender} from './nnn'
 import * as cc from './cc'
 import * as century from './century'
 
-export const female = (date: Moment = Bday.random()) => generate(date, Nnn.generate(Gender.Female))
-export const femaleTemporal = (date: Moment = Bday.random()) => generate(date, Nnn.generateTemporal(Gender.Female))
-export const male = (date: Moment = Bday.random()) => generate(date, Nnn.generate(Gender.Male))
-export const maleTemporal = (date: Moment = Bday.random()) => generate(date, Nnn.generateTemporal(Gender.Male))
-export const generate = (date: Moment = Bday.random(), nnn: Nnn): string => {
+export const female = (date: LocalDate = Bday.random()) => generate(date, Nnn.generate(Gender.Female))
+export const femaleTemporal = (date: LocalDate = Bday.random()) => generate(date, Nnn.generateTemporal(Gender.Female))
+export const male = (date: LocalDate = Bday.random()) => generate(date, Nnn.generate(Gender.Male))
+export const maleTemporal = (date: LocalDate = Bday.random()) => generate(date, Nnn.generateTemporal(Gender.Male))
+export const generate = (date: LocalDate = Bday.random(), nnn: Nnn): string => {
   const bday = Bday.from(date)
   const centuryId = bday.toCenturyId()
   const controlChar = cc.from(bday, nnn)
@@ -36,18 +36,19 @@ enum Groups {
 
 export class Parser {
   private static pattern =
-    '^' +               // start
-    '(\\d{6})' +        // bday: DDMMYY
-    '([-aA])' +         // century id: -, a or A
-    '(\\d{3})' +        // nnn: three digits
-    '([\\da-yA-Y])' +   // control char
-    "$"                 // end
-
+    '^' + // start
+    '(.{6})' + // bday: ddMMyy
+    '(.)' + // century id: - or A
+    '(.{3})' + // nnn: three digits
+    '(.)' + // control char
+    '$' // end
   private static re = new RegExp(Parser.pattern)
 
-  static parse(candidate: string): ValidSsn {
+  public static parse(candidate: string): ValidSsn {
     const m = candidate.match(Parser.re)
-    if (m == null) throw Error('Invalid ssn: pattern mismatch')
+    if (m == null) {
+      throw Error('Invalid ssn: pattern mismatch')
+    }
 
     const centuryId = century.parseId(m[Groups.century])
     const bday = Bday.parse(m[Groups.bday], centuryId)
@@ -63,7 +64,7 @@ export class Parser {
       nnn,
       cc: control,
       isFemale: () => nnn.isFemale(),
-      isTemporal: () => nnn.isTemporal()
+      isTemporal: () => nnn.isTemporal(),
     }
   }
 }
