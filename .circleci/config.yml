@@ -1,0 +1,48 @@
+version: 2
+
+aliases:
+  - &workspace_root ~/repo
+
+  - &container_config
+    docker:
+      - image: circleci/node:8.11.2
+    working_directory: *workspace_root
+
+  - &repo_cache_key v1-repo-{{ .Branch }}-{{ .Revision }}
+
+  - &restore_repo
+    restore_cache:
+      keys:
+        - *repo_cache_key
+
+  - &deps_cache_key >-
+    v1-deps
+    {{ checksum ".circleci/config.yml" }}
+    {{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+
+  - &restore_deps
+    restore_cache:
+      keys:
+        - *deps_cache_key
+
+jobs:
+  build:
+    <<: *container_config
+    steps:
+      - *restore_repo
+      - checkout
+      - save_cache:
+          key: *repo_cache_key
+          paths:
+            - .
+      - *restore_deps
+      - run:
+          name: Install deps
+          command: |
+            set -exu
+            yarn install --frozen-lockfile
+      - save_cache:
+          key: *deps_cache_key
+          paths:
+            - ~/.cache/yarn
+      - run: yarn test

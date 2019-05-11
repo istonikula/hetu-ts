@@ -6,10 +6,10 @@ import * as random from './random'
 export default class Nnn {
   constructor(readonly value: number) {}
 
-  isFemale() { return Nnn.isFemale(this.value) }
-  isMale() { return Nnn.isMale(this.value) }
-  isTemporal() { return Nnn.isTemporal(this.value) }
-  toString() { return ('00' + this.value).slice(-3) }
+  isFemale = () => Nnn.isFemale(this.value)
+  isMale = () => Nnn.isMale(this.value)
+  isTemporal = () => Nnn.isTemporal(this.value)
+  toString = () => ('00' + this.value).slice(-3)
 
   static parse(s: string) {
     const i = parseInt(s, 10)
@@ -36,10 +36,10 @@ export default class Nnn {
     }
   }
 
-  static isFemale(x: number) { return x % 2 !== 0 }
-  static isMale(x: number) { return x % 2 === 0 }
-  static isReal(x: number) { return 2 <= x && x <= 899 }
-  static isTemporal(x: number) { return 900 <= x && x <= 999 }
+  static isFemale = (x: number) => x % 2 === 0
+  static isMale = (x: number) => x % 2 !== 0
+  static isReal = (x: number) => 2 <= x && x <= 899
+  static isTemporal= (x: number) => 900 <= x && x <= 999
 }
 
 export enum Gender {

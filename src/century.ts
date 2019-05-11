@@ -6,16 +6,16 @@ export class A {
   static readonly tag = 'A'
   static readonly century = 2000
 
-  century() { return A.century }
-  toString() { return 'A' }
+  century = () => A.century
+  toString = () => 'A'
 }
 
 export class Minus {
   static readonly tag = 'Minus'
   static readonly century = 1900
 
-  century() { return Minus.century }
-  toString() { return '-' }
+  century = () => Minus.century
+  toString = () => '-'
 }
 
 export function parse(century: number): CenturyId {
@@ -28,8 +28,8 @@ export function parse(century: number): CenturyId {
 }
 
 export function  parseId(id: string): CenturyId {
-  switch(id.toLowerCase()) {
-    case 'a': return new A()
+  switch(id) {
+    case 'A': return new A()
     case '-': return new Minus()
     default:
       throw new Error(`Unsupported century id ${id}`)
