@@ -1,8 +1,8 @@
 
 import { LocalDate } from 'js-joda'
 
-import Bday from './bday'
-import Nnn, { Gender} from './nnn'
+import { Bday } from './bday'
+import { Gender, Nnn} from './nnn'
 import * as cc from './cc'
 import * as century from './century'
 

@@ -1,5 +1,5 @@
-import Bday from './bday'
-import Nnn from './nnn'
+import { Bday } from './bday'
+import { Nnn } from './nnn'
 
 const controlCharLookup = '0123456789ABCDEFHJKLMNPRSTUVWXY'
 
