@@ -9,7 +9,7 @@ describe('ssn', () => {
   it('female', () => {
     expect(ssn.Parser.parse('210721-1703').isFemale()).toBeTruthy()
 
-    const actual = ssn.Parser.parse(ssn.female(bday1900))
+    const actual = ssn.Parser.parse(`${ssn.female(bday1900)}`)
     expect(actual.isFemale()).toBeTruthy()
     expect(actual.isTemporal()).toBeFalsy()
   })
@@ -17,7 +17,7 @@ describe('ssn', () => {
   it('male', () => {
     expect(ssn.Parser.parse('260785-309A').isFemale()).toBeFalsy()
 
-    const actual = ssn.Parser.parse(ssn.male(bday2000))
+    const actual = ssn.Parser.parse(`${ssn.male(bday2000)}`)
     expect(actual.isFemale()).toBeFalsy()
     expect(actual.isTemporal()).toBeFalsy()
   })
@@ -25,7 +25,7 @@ describe('ssn', () => {
   it('female temporal', () => {
     expect(ssn.Parser.parse('090707-998E').isFemale()).toBeTruthy()
 
-    const actual = ssn.Parser.parse(ssn.femaleTemporal(bday2000))
+    const actual = ssn.Parser.parse(`${ssn.femaleTemporal(bday2000)}`)
     expect(actual.isFemale()).toBeTruthy()
     expect(actual.isTemporal()).toBeTruthy()
   })
@@ -33,7 +33,7 @@ describe('ssn', () => {
   it('male temporal', () => {
     expect(ssn.Parser.parse('050162-981N').isFemale()).toBeFalsy()
 
-    const actual = ssn.Parser.parse(ssn.maleTemporal(bday1900))
+    const actual = ssn.Parser.parse(`${ssn.maleTemporal(bday1900)}`)
     expect(actual.isFemale()).toBeFalsy()
     expect(actual.isTemporal()).toBeTruthy()
   })
@@ -48,7 +48,7 @@ describe('ssn', () => {
   it('century id', () => {
     const valid = ssn.Parser.parse('220305A244S')
 
-    const lowercase = `${valid.bday}a${valid.nnn}${valid.cc}`
+    const lowercase = `${valid.bday}a${valid.nnn}${valid.control}`
     expect(() => ssn.Parser.parse(lowercase)).toThrowError(
       'Unsupported century id a',
     )
@@ -80,7 +80,7 @@ describe('ssn', () => {
   })
 
   it('pattern: too short', () => {
-    const tooShort = ssn.male().substring(1)
+    const tooShort = `${ssn.male()}`.substring(1)
     expect(() => ssn.Parser.parse(tooShort)).toThrowError(
       'Invalid ssn: pattern mismatch',
     )

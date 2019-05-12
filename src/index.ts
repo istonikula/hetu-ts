@@ -10,22 +10,24 @@ export const female = (date: LocalDate = Bday.random()) => generate(date, Nnn.ge
 export const femaleTemporal = (date: LocalDate = Bday.random()) => generate(date, Nnn.generateTemporal(Gender.Female))
 export const male = (date: LocalDate = Bday.random()) => generate(date, Nnn.generate(Gender.Male))
 export const maleTemporal = (date: LocalDate = Bday.random()) => generate(date, Nnn.generateTemporal(Gender.Male))
-export const generate = (date: LocalDate = Bday.random(), nnn: Nnn): string => {
+export const generate = (date: LocalDate = Bday.random(), nnn: Nnn): ValidSsn => {
   const bday = Bday.from(date)
-  const centuryId = bday.toCenturyId()
-  const controlChar = cc.from(bday, nnn)
-  return `${bday}${centuryId}${nnn}${controlChar}`
+  const control = cc.from(bday, nnn)
+  return new ValidSsn(bday, nnn, control)
 }
 
-export interface ValidSsn {
-  bday: Bday
-  nnn: Nnn
-  cc: string
+export class ValidSsn {
+  constructor(
+    readonly bday: Bday,
+    readonly nnn: Nnn,
+    readonly control: string
+  ) {}
 
-  isFemale(): boolean
-  isTemporal(): boolean
+  isFemale = () => this.nnn.isFemale()
+  isMale = () => this.nnn.isMale()
+  isTemporal = () => this.nnn.isTemporal()
+  toString = () => `${this.bday}${this.bday.toCenturyId()}${this.nnn}${this.control}`
 }
-
 
 enum Groups {
   bday = 1,
@@ -59,13 +61,7 @@ export class Parser {
       throw new Error(`Invalid ssn: control char mismatch`)
     }
 
-    return {
-      bday,
-      nnn,
-      cc: control,
-      isFemale: () => nnn.isFemale(),
-      isTemporal: () => nnn.isTemporal(),
-    }
+    return new ValidSsn(bday, nnn, control)
   }
 }
 
