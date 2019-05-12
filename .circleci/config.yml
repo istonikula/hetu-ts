@@ -26,7 +26,7 @@ aliases:
         - *deps_cache_key
 
 jobs:
-  build:
+  test:
     <<: *container_config
     steps:
       - *restore_repo
