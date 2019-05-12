@@ -1,31 +1,37 @@
 
 import { LocalDate } from 'js-joda'
 
-import Bday from './bday'
-import Nnn, { Gender} from './nnn'
+import { Bday } from './bday'
+import { Gender, Nnn} from './nnn'
 import * as cc from './cc'
 import * as century from './century'
 
-export const female = (date: LocalDate = Bday.random()) => generate(date, Nnn.generate(Gender.Female))
-export const femaleTemporal = (date: LocalDate = Bday.random()) => generate(date, Nnn.generateTemporal(Gender.Female))
-export const male = (date: LocalDate = Bday.random()) => generate(date, Nnn.generate(Gender.Male))
-export const maleTemporal = (date: LocalDate = Bday.random()) => generate(date, Nnn.generateTemporal(Gender.Male))
-export const generate = (date: LocalDate = Bday.random(), nnn: Nnn): string => {
+export class ValidSsn {
+  constructor(
+    readonly bday: Bday,
+    readonly nnn: Nnn,
+    readonly control: string
+  ) {}
+
+  isFemale = () => this.nnn.isFemale()
+  isMale = () => this.nnn.isMale()
+  isTemporal = () => this.nnn.isTemporal()
+  toString = () => `${this.bday}${this.bday.toCenturyId()}${this.nnn}${this.control}`
+}
+
+// -- GENERATOR
+
+export const female = (date?: LocalDate) => generate(Nnn.generate(Gender.Female), date)
+export const femaleTemporal = (date?: LocalDate) => generate(Nnn.generateTemporal(Gender.Female), date)
+export const male = (date?: LocalDate) => generate(Nnn.generate(Gender.Male), date)
+export const maleTemporal = (date?: LocalDate) => generate(Nnn.generateTemporal(Gender.Male), date)
+export const generate = (nnn: Nnn, date: LocalDate = Bday.random()): ValidSsn => {
   const bday = Bday.from(date)
-  const centuryId = bday.toCenturyId()
-  const controlChar = cc.from(bday, nnn)
-  return `${bday}${centuryId}${nnn}${controlChar}`
+  const control = cc.from(bday, nnn)
+  return new ValidSsn(bday, nnn, control)
 }
 
-export interface ValidSsn {
-  bday: Bday
-  nnn: Nnn
-  cc: string
-
-  isFemale(): boolean
-  isTemporal(): boolean
-}
-
+// -- PARSER
 
 enum Groups {
   bday = 1,
@@ -34,38 +40,29 @@ enum Groups {
   control = 4
 }
 
-export class Parser {
-  private static pattern =
-    '^' + // start
-    '(.{6})' + // bday: ddMMyy
-    '(.)' + // century id: - or A
-    '(.{3})' + // nnn: three digits
-    '(.)' + // control char
-    '$' // end
-  private static re = new RegExp(Parser.pattern)
+const pattern =
+  '^' + // start
+  '(.{6})' + // bday: ddMMyy
+  '(.)' + // century id: - or A
+  '(.{3})' + // nnn: three digits
+  '(.)' + // control char
+  '$' // end
+const re = new RegExp(pattern)
 
-  public static parse(candidate: string): ValidSsn {
-    const m = candidate.match(Parser.re)
-    if (m == null) {
-      throw Error('Invalid ssn: pattern mismatch')
-    }
-
-    const centuryId = century.parseId(m[Groups.century])
-    const bday = Bday.parse(m[Groups.bday], centuryId)
-    const nnn = Nnn.parse(m[Groups.nnn])
-    const control = m[Groups.control]
-
-    if (cc.from(bday, nnn) !== control) {
-      throw new Error(`Invalid ssn: control char mismatch`)
-    }
-
-    return {
-      bday,
-      nnn,
-      cc: control,
-      isFemale: () => nnn.isFemale(),
-      isTemporal: () => nnn.isTemporal(),
-    }
+export const parse = (candidate: string): ValidSsn => {
+  const m = candidate.match(re)
+  if (m == null) {
+    throw Error('Invalid ssn: pattern mismatch')
   }
-}
 
+  const centuryId = century.parseId(m[Groups.century])
+  const bday = Bday.parse(m[Groups.bday], centuryId)
+  const nnn = Nnn.parse(m[Groups.nnn])
+  const control = m[Groups.control]
+
+  if (cc.from(bday, nnn) !== control) {
+    throw new Error(`Invalid ssn: control char mismatch`)
+  }
+
+  return new ValidSsn(bday, nnn, control)
+}

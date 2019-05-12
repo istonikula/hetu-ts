@@ -3,7 +3,7 @@ import * as random from './random'
 // spec: three digits between 002-899. 900-999 used for temporal ssns
 // female: even
 // male: odd
-export default class Nnn {
+export class Nnn {
   constructor(readonly value: number) {}
 
   isFemale = () => Nnn.isFemale(this.value)

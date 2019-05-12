@@ -11,7 +11,7 @@ enum Groups {
   year = 3,
 }
 
-export default class Bday {
+export class Bday {
   constructor(readonly value: LocalDate) {}
 
   toString = () => this.value.format(df)
