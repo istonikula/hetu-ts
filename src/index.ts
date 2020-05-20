@@ -5,6 +5,7 @@ import { Bday } from './bday'
 import { Gender, Nnn} from './nnn'
 import * as cc from './cc'
 import * as century from './century'
+import * as Result from './result'
 
 export class ValidSsn {
   constructor(
@@ -49,20 +50,24 @@ const pattern =
   '$' // end
 const re = new RegExp(pattern)
 
-export const parse = (candidate: string): ValidSsn => {
-  const m = candidate.match(re)
-  if (m == null) {
-    throw new Error('Invalid ssn: pattern mismatch')
+export const parse = (candidate: string): Result.Type<ValidSsn> => {
+  try {
+    const m = candidate.match(re)
+    if (m == null) {
+      throw new Error('Invalid ssn: pattern mismatch')
+    }
+
+    const centuryId = century.parseId(m[Groups.century])
+    const bday = Bday.parse(m[Groups.bday], centuryId)
+    const nnn = Nnn.parse(m[Groups.nnn])
+    const control = m[Groups.control]
+
+    if (cc.from(bday, nnn) !== control) {
+      throw new Error(`Invalid ssn: control char mismatch`)
+    }
+
+    return new ValidSsn(bday, nnn, control)
+  } catch (e) {
+    return e
   }
-
-  const centuryId = century.parseId(m[Groups.century])
-  const bday = Bday.parse(m[Groups.bday], centuryId)
-  const nnn = Nnn.parse(m[Groups.nnn])
-  const control = m[Groups.control]
-
-  if (cc.from(bday, nnn) !== control) {
-    throw new Error(`Invalid ssn: control char mismatch`)
-  }
-
-  return new ValidSsn(bday, nnn, control)
 }
