@@ -12,7 +12,8 @@
     "jest": "jest",
     "test": "yarn run lint && yarn run jest",
     "clean": "rimraf lib",
-    "build": "yarn run clean && tsc"
+    "build": "yarn run clean && tsc",
+    "publish:local": "yarn build && yalc publish"
   },
   "repository": {
     "type": "git",
