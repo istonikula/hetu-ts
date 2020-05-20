@@ -7,6 +7,10 @@ import * as cc from './cc'
 import * as century from './century'
 import * as Result from './result'
 
+export {
+  Result
+}
+
 export class ValidSsn {
   constructor(
     readonly bday: Bday,

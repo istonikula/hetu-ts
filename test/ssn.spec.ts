@@ -1,7 +1,6 @@
 import { LocalDate } from 'js-joda'
 
 import * as ssn from '../src'
-import * as Result from '../src/result'
 
 describe('ssn', () => {
   const bday1900 = LocalDate.of(1980, 2, 22)
@@ -70,18 +69,18 @@ describe('ssn', () => {
   })
 })
 
-const ensureValid = (result: Result.Type<ssn.ValidSsn>): ssn.ValidSsn =>
-  Result.isSuccess(result) ? result : fail(`success expected, got ${result}`)
+const ensureValid = (result: ssn.Result.Type<ssn.ValidSsn>): ssn.ValidSsn =>
+  ssn.Result.isSuccess(result) ? result : fail(`success expected, got ${result}`)
 
-const expectError = (result: Result.Type<ssn.ValidSsn>, expected: string): void => {
-  if (Result.isError(result)) {
+const expectError = (result: ssn.Result.Type<ssn.ValidSsn>, expected: string): void => {
+  if (ssn.Result.isError(result)) {
     expect(result.message).toEqual(expected)
     return
   }
   fail(`error expected`)
 }
 
-const verifySsn = (isFemale: boolean, isTemporal: boolean) => (actual: Result.Type<ssn.ValidSsn>) => {
+const verifySsn = (isFemale: boolean, isTemporal: boolean) => (actual: ssn.Result.Type<ssn.ValidSsn>) => {
   const valid = ensureValid(actual)
   expect(valid.isFemale()).toEqual(isFemale)
   expect(valid.isMale()).toEqual(!isFemale)
