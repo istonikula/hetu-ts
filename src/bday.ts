@@ -30,7 +30,7 @@ export class Bday {
   public static parse(s: string, centuryId: century.CenturyId) {
     const m = s.match(Bday.re)
     if (m == null) {
-      throw Error('Invalid bday: pattern mismatch')
+      throw new Error('Invalid bday: pattern mismatch')
     }
     const day = parseInt(m[Groups.day], 10)
     const month = parseInt(m[Groups.month], 10)

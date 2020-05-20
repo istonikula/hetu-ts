@@ -52,7 +52,7 @@ const re = new RegExp(pattern)
 export const parse = (candidate: string): ValidSsn => {
   const m = candidate.match(re)
   if (m == null) {
-    throw Error('Invalid ssn: pattern mismatch')
+    throw new Error('Invalid ssn: pattern mismatch')
   }
 
   const centuryId = century.parseId(m[Groups.century])
