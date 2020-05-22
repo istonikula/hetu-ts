@@ -32,48 +32,59 @@ describe('ssn', () => {
 
   it('bday', () => {
     const nonDate = 'xxxxxx-450F'
-    expect(() => ssn.parse(nonDate)).toThrowError('Invalid bday: pattern mismatch')
+    expectError(ssn.parse(nonDate), 'Invalid bday: pattern mismatch')
   })
 
   it('century id', () => {
-    const valid = ssn.parse('220305A244S')
-
+    const valid = ensureValid(ssn.parse('220305A244S'))
     const lowercase = `${valid.bday}a${valid.nnn}${valid.control}`
-    expect(() => ssn.parse(lowercase)).toThrowError('Unsupported century id a')
+    expectError(ssn.parse(lowercase), 'Unsupported century id a')
 
     const notSupported = '090521+9220'
-    expect(() => ssn.parse(notSupported)).toThrowError('Unsupported century id +')
+    expectError(ssn.parse(notSupported), 'Unsupported century id +')
   })
 
   it('nnn', () => {
-    expect(() => ssn.parse('020146-000F')).toThrowError('Invalid nnn: 000')
+    expectError(ssn.parse('020146-000F'), 'Invalid nnn: 000')
   })
 
   it('control char', () => {
-    const valid = ssn.parse('020146-450F')
+    const valid = ensureValid(ssn.parse('020146-450F'))
 
     const lowercase = `${valid.bday}-${valid.nnn}f`
-    expect(() => ssn.parse(lowercase)).toThrowError('Invalid ssn: control char mismatch')
+    expectError(ssn.parse(lowercase), 'Invalid ssn: control char mismatch')
 
     const realMismatch = `${valid.bday}-${valid.nnn}A`
-    expect(() => ssn.parse(realMismatch)).toThrowError('Invalid ssn: control char mismatch')
+    expectError(ssn.parse(realMismatch), 'Invalid ssn: control char mismatch')
   })
 
   it('pattern: too short', () => {
     const tooShort = `${ssn.male()}`.substring(1)
-    expect(() => ssn.parse(tooShort)).toThrowError('Invalid ssn: pattern mismatch')
+    expectError(ssn.parse(tooShort), 'Invalid ssn: pattern mismatch')
   })
 
   it('pattern: too long', () => {
     const tooLong = ssn.male() + 'X'
-    expect(() => ssn.parse(tooLong)).toThrowError('Invalid ssn: pattern mismatch')
+    expectError(ssn.parse(tooLong), 'Invalid ssn: pattern mismatch')
   })
 })
 
-const verifySsn = (isFemale: boolean, isTemporal: boolean) => (actual: ssn.ValidSsn) => {
-  expect(actual.isFemale()).toEqual(isFemale)
-  expect(actual.isMale()).toEqual(!isFemale)
-  expect(actual.isTemporal()).toEqual(isTemporal)
+const ensureValid = (result: ssn.Result.Type<ssn.ValidSsn>): ssn.ValidSsn =>
+  ssn.Result.isSuccess(result) ? result : fail(`success expected, got ${result}`)
+
+const expectError = (result: ssn.Result.Type<ssn.ValidSsn>, expected: string): void => {
+  if (ssn.Result.isError(result)) {
+    expect(result.message).toEqual(expected)
+    return
+  }
+  fail(`error expected`)
+}
+
+const verifySsn = (isFemale: boolean, isTemporal: boolean) => (actual: ssn.Result.Type<ssn.ValidSsn>) => {
+  const valid = ensureValid(actual)
+  expect(valid.isFemale()).toEqual(isFemale)
+  expect(valid.isMale()).toEqual(!isFemale)
+  expect(valid.isTemporal()).toEqual(isTemporal)
 }
 
 const verifyFemale = verifySsn(true, false)

@@ -1,6 +1,6 @@
 {
   "name": "hetu-ts",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Finnish social security number (hetu) TypeScript library",
   "files": [
     "lib"
@@ -12,7 +12,8 @@
     "jest": "jest",
     "test": "yarn run lint && yarn run jest",
     "clean": "rimraf lib",
-    "build": "yarn run clean && tsc"
+    "build": "yarn run clean && tsc",
+    "publish:local": "yarn build && yalc publish"
   },
   "repository": {
     "type": "git",
