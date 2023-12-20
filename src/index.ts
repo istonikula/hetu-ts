@@ -20,7 +20,7 @@ export class ValidSsn {
     readonly nnn: Nnn,
     readonly control: string
   ) {
-    this.value = `${this.bday}${this.century}${this.nnn}${this.control}`
+    this.value = `${bday}${century}${nnn}${control}`
   }
 
   isFemale = () => this.nnn.isFemale()
