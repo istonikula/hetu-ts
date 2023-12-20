@@ -5,7 +5,7 @@ aliases:
 
   - &container_config
     docker:
-      - image: circleci/node:8.11.2
+      - image: cimg/node:18.19.0
     working_directory: *workspace_root
 
   - &repo_cache_key v1-repo-{{ .Branch }}-{{ .Revision }}
@@ -16,9 +16,9 @@ aliases:
         - *repo_cache_key
 
   - &deps_cache_key >-
-    v1-deps
+    v2-deps
     {{ checksum ".circleci/config.yml" }}
-    {{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+    {{ checksum "package.json" }}-{{ checksum "package-lock.json" }}
 
   - &restore_deps
     restore_cache:
@@ -40,9 +40,9 @@ jobs:
           name: Install deps
           command: |
             set -exu
-            yarn install --frozen-lockfile
+            npm ci
       - save_cache:
           key: *deps_cache_key
           paths:
-            - ~/.cache/yarn
-      - run: yarn test
+            - ~/.npm
+      - run: npm test
