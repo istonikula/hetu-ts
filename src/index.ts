@@ -72,6 +72,6 @@ export const parse = (candidate: string): Result.Type<ValidSsn> => {
 
     return new ValidSsn(bday, nnn, control)
   } catch (e) {
-    return e
+    return e as Error
   }
 }
