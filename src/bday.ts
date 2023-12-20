@@ -1,7 +1,7 @@
 import { DateTimeFormatter, Instant, LocalDate, ZoneId } from 'js-joda'
 
 import * as random from './random'
-import * as century from './century'
+import { Century } from './century'
 
 const df = DateTimeFormatter.ofPattern('ddMMyy')
 
@@ -16,7 +16,7 @@ export class Bday {
 
   toString = () => this.value.format(df)
 
-  toCenturyId = () => century.parse(Bday.toCentury(this.value))
+  century = () => Math.trunc((this.value.year() / 100)) * 100
 
   static from = (date: LocalDate) => new Bday(date)
 
@@ -27,14 +27,14 @@ export class Bday {
     return LocalDate.ofInstant(Instant.ofEpochMilli(random.fromRange(start, end)))
   }
 
-  public static parse(s: string, centuryId: century.CenturyId) {
+  static parse(s: string, century: Century) {
     const m = s.match(Bday.re)
     if (m == null) {
       throw new Error('Invalid bday: pattern mismatch')
     }
     const day = parseInt(m[Groups.day], 10)
     const month = parseInt(m[Groups.month], 10)
-    const year = parseInt(m[Groups.year], 10) + centuryId.century()
+    const year = parseInt(m[Groups.year], 10) + century.value
 
     return new Bday(LocalDate.of(year, month, day))
   }
@@ -46,6 +46,4 @@ export class Bday {
     '(\\d{2})' + // yy
     '$' // end
   private static re = new RegExp(Bday.pattern)
-
-  private static toCentury = (date: LocalDate) => Math.floor((date.year() / 100)) * 100
 }

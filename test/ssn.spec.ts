@@ -6,6 +6,14 @@ describe('ssn', () => {
   const bday1900 = LocalDate.of(1980, 2, 22)
   const bday2000 = LocalDate.of(2000, 11, 12)
 
+  test.each([
+    ...['-', 'Y', 'X', 'W', 'V', 'U'].map(x => `180851${x}229L`),
+    ...['A', 'B', 'C', 'D', 'E', 'F'].map(x => `010100${x}030D`)
+  ])('parse: %s', orig => {
+    const parsed = ensureValid(ssn.parse(orig))
+    expect(parsed.value).toEqual(orig)
+  })
+
   it('female', () => {
     verifyFemale(ssn.parse('210721-1703'))
     verifyFemale(ssn.parse(`${ssn.female(bday1900)}`))
